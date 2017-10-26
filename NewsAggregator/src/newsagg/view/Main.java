@@ -11,8 +11,12 @@ public class Main {
 		// TODO Auto-generated method stub
 		
 		ManageFeed manObj = new ManageFeed();
-		manObj.subscribeFeed();
+		manObj.subscribeFeed("news","https://www.yahoo.com/news/rss/tech");
 		
+		//"http://www.vogella.com/article.rss");
+		//"http://sverigesradio.se/sida/default.aspx?programid=4916");
+		//"https://www.yahoo.com/news/rss/tech"
+		//"http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml");
 
 	}
 

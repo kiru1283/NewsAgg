@@ -1,10 +1,15 @@
 package newsagg.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class Feed {
 	
 	private String categoryName;
 	private String feedName;
 	
+	final List<Article> entries = new ArrayList<Article>();
 	
 	public Feed(String categoryName,String feedName ){
 		
@@ -21,5 +26,8 @@ public class Feed {
 		return feedName;
 	}
 
+	public List<Article> getArticles() {
+        return entries;
+    }
 
 }
