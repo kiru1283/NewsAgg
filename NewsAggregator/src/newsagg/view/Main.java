@@ -1,6 +1,8 @@
 package newsagg.view;
 
 import newsagg.controller.ManageFeed;
+import newsagg.model.JSONWriter;
+import newsagg.model.JSONReader;
 
 public class Main {
 
@@ -17,6 +19,12 @@ public class Main {
 		//"http://sverigesradio.se/sida/default.aspx?programid=4916");
 		//"https://www.yahoo.com/news/rss/tech"
 		//"http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml");
+		
+		//JSONWriter jsonObj = new JSONWriter();
+		//jsonObj.jsonwrite();
+		
+		JSONReader readObj = new JSONReader();
+		readObj.reader();
 
 	}
 

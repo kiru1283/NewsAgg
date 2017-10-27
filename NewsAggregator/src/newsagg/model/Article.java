@@ -78,7 +78,7 @@ public class Article {
 		this.guid = guid;
 	}
 		
-	  @Override
+	 @Override
 	    public String toString() {
 	        return "Article [title=" + title + ", description=" + description
 	                + ", link=" + link + ", author=" + creator + ", guid=" + guid
