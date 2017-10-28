@@ -21,19 +21,21 @@ public class Main {
 		//to add feed and store in JSON
 		manObj.subscribeFeed("news","https://www.yahoo.com/news/rss/tech");
 		
-		manObj.subscribeFeed("news","http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml");
+	//	manObj.subscribeFeed("news","http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml");
 		
 				//"http://www.vogella.com/article.rss");
-				//manObj.subscribeFeed("news","http://sverigesradio.se/sida/default.aspx?programid=4916");
+	//			manObj.subscribeFeed("news","http://api.sr.se/api/rss/program/4916");
 				//"https://www.yahoo.com/news/rss/tech"
 				//"http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml");
+		
+	// wrong feed	manObj.subscribeFeed("news", "http://sverigesradio.se/radioswedenpalattsvenska");
 		
 		//to show all feeds added so far
 		JSONArray jsarray = manObj.viewFeeds();
 		//TODO: bind values of jsonarray to tree view
 		
 		//to show the articles in a feed
-		List articles = manObj.readFeed("news","https://www.yahoo.com/news/rss/tech");
+		List articles = manObj.readFeed("news","http://api.sr.se/api/rss/program/4916");
 		//TODO: bind values of articles to grid
 		
 		//to delete a existing feed
