@@ -1,48 +1,93 @@
 package newsagg.model;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 
 public class JSONReader {
+
+	private static String filename;
 	
-	public void reader(){
+	public JSONReader() {
 		
-	  JSONParser parser = new JSONParser();
+		filename = "test.json";
+	}
 
-      try {
+	public void jsonReaderMessage() {
 
-          Object obj = parser.parse(new FileReader("test.json"));
+		JSONParser parser = new JSONParser();
 
-          JSONObject jsonObject = (JSONObject) obj;
-          System.out.println(jsonObject);
+		try {
 
-          String name = (String) jsonObject.get("name");
-          System.out.println(name);
+			JSONArray jsonArray = (JSONArray) parser.parse(new FileReader(filename));
+			System.out.println(jsonArray);
 
-          long age = (Long) jsonObject.get("age");
-          System.out.println(age);
+			for (Object jsonObj : jsonArray) {
 
-          // loop array
-         // JSONArray msg = (JSONArray) jsonObject.get("messages");
-          //Iterator<String> iterator = msg.iterator();
-          //while (iterator.hasNext()) {
-          //    System.out.println(iterator.next());
-          //}
+				JSONObject message = (JSONObject) jsonObj;
 
-      } catch (FileNotFoundException e) {
-          e.printStackTrace();
-      } catch (IOException e) {
-          e.printStackTrace();
-      } catch (ParseException e) {
-          e.printStackTrace();
-      }
+				// String articleid = (String) message.get("articleid");
+				// System.out.println(articleid);
 
-  }
+				String title = (String) message.get("title");
+				System.out.println(title);
+
+				String description = (String) message.get("description");
+				System.out.println(description);
+
+				String link = (String) message.get("link");
+				System.out.println(link);
+
+				String guid = (String) message.get("guid");
+				System.out.println(guid);
+
+				String creator = (String) message.get("creator");
+				System.out.println(creator);
+
+				String pubdate = (String) message.get("pubdate");
+				System.out.println(pubdate);
+
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public JSONArray jsonReader() {
+
+		JSONParser parser = new JSONParser();
+		JSONArray jsonArray = null;
+		try {
+			
+			File file = new File(filename);
+			FileReader filereader = new FileReader(file);
+			
+			if (file.length() != 0) {
+				jsonArray = (JSONArray) parser.parse(filereader);
+			}			
+
+			filereader.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}  catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return jsonArray;
+	}
 
 }

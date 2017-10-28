@@ -1,8 +1,12 @@
 package newsagg.view;
 
+import java.util.List;
+
+import org.json.simple.JSONArray;
+
 import newsagg.controller.ManageFeed;
-import newsagg.model.JSONWriter;
-import newsagg.model.JSONReader;
+
+
 
 public class Main {
 
@@ -13,18 +17,27 @@ public class Main {
 		// TODO Auto-generated method stub
 		
 		ManageFeed manObj = new ManageFeed();
+		
+		//to add feed and store in JSON
 		manObj.subscribeFeed("news","https://www.yahoo.com/news/rss/tech");
 		
-		//"http://www.vogella.com/article.rss");
-		//"http://sverigesradio.se/sida/default.aspx?programid=4916");
-		//"https://www.yahoo.com/news/rss/tech"
-		//"http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml");
+		manObj.subscribeFeed("news","http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml");
 		
-		//JSONWriter jsonObj = new JSONWriter();
-		//jsonObj.jsonwrite();
+				//"http://www.vogella.com/article.rss");
+				//manObj.subscribeFeed("news","http://sverigesradio.se/sida/default.aspx?programid=4916");
+				//"https://www.yahoo.com/news/rss/tech"
+				//"http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml");
 		
-		JSONReader readObj = new JSONReader();
-		readObj.reader();
+		//to show all feeds added so far
+		JSONArray jsarray = manObj.viewFeeds();
+		//TODO: bind values of jsonarray to tree view
+		
+		//to show the articles in a feed
+		List articles = manObj.readFeed("news","https://www.yahoo.com/news/rss/tech");
+		//TODO: bind values of articles to grid
+		
+		//to delete a existing feed
+		manObj.removeFeed("news","https://www.yahoo.com/news/rss/tech");
 
 	}
 

@@ -81,7 +81,7 @@ public class Article {
 	 @Override
 	    public String toString() {
 	        return "Article [title=" + title + ", description=" + description
-	                + ", link=" + link + ", author=" + creator + ", guid=" + guid
+	                + ", link=" + link + ", creator=" + creator + ", guid=" + guid
 	                + ", pubdate=" + pubdate + "]";
 	    }
 

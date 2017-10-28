@@ -2,6 +2,7 @@ package newsagg.model;
 
 import java.util.ArrayList;
 import java.util.List;
+//import org.json.simple.JSONObject;
 
 
 public class Feed {
@@ -9,7 +10,9 @@ public class Feed {
 	private String categoryName;
 	private String feedName;
 	
-	final List<Article> entries = new ArrayList<Article>();
+	private List<Article> entries = new ArrayList<Article>();
+	//private JSONObject obj = new JSONObject();
+
 	
 	public Feed(String categoryName,String feedName ){
 		

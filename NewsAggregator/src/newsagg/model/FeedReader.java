@@ -12,7 +12,7 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.XMLEvent;
 
 
-public class XMLReader {
+public class FeedReader {
 
 	static final String TITLE = "title";
     static final String DESCRIPTION = "description";
@@ -28,7 +28,7 @@ public class XMLReader {
     final String category;
     final URL url;
 
-    public XMLReader (String category, String feedUrl) {
+    public FeedReader (String category, String feedUrl) {
     		this.category = category;
         try {
             this.url = new URL(feedUrl);
@@ -98,7 +98,8 @@ public class XMLReader {
                     }
                 } else if (event.isEndElement()) {
                     if (event.asEndElement().getName().getLocalPart() == (ITEM)) {
-                        Article message = new Article();
+                        
+                    	Article message = new Article();
                         message.setCreator(source);
                         message.setDescription(description);
                         message.setGuid(guid);
@@ -107,6 +108,9 @@ public class XMLReader {
                         message.setPubdate(pubdate);
                         
                         feed.getArticles().add(message);
+                        
+                        
+                        
                         event = eventReader.nextEvent();
                         continue;
                     }
