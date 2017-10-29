@@ -13,84 +13,91 @@ import newsagg.model.JSONWriter;
 import newsagg.model.RSSReader;
 
 public class ManageFeed {
-	
+
 	private boolean feedexists;
+	private static final String dbfilename = "DB.json";
 
 	public void subscribeFeed(String category, String url) {
 
-		boolean removeFeed =false;
-		
-		JSONArray arrFeed = verifyFeedExists(category,url,removeFeed);
+		boolean removeFeed = false;
+
+		JSONArray arrFeed = verifyFeedExists(category, url, removeFeed);
 
 		if (!feedexists) {
 			// read to check and load feed data from RSS
 			List<Article> articles = readFeed(category, url);
 
 			if (articles.size() > 0) {
-				
+
 				// store the feed data
-				JSONWriter jsonObj = new JSONWriter();
-				jsonObj.jsonWrite(arrFeed,category, url,removeFeed);
-				
+				JSONWriter jsonObj = new JSONWriter(dbfilename);
+				boolean writeFile = jsonObj.jsonWrite(arrFeed, category, url, removeFeed);
+				if (!writeFile) {
+					System.out.println("Error writing to file.");
+				}
+
 			} else {
-				System.out.println("This feed has no data");
+				System.out.println("This feed has no data.");
 			}
 
 		} else {
 
-			System.out.println("Feed url is already added");
+			System.out.println("Feed url is already added.");
 		}
 
 	}
 
 	private JSONArray verifyFeedExists(String category, String url, boolean remove) {
-		
+
 		// verify is feed is already added
-				feedexists = false;
-				JSONArray arrFeed = viewFeeds();
+		feedexists = false;
+		JSONArray arrFeed = viewFeeds(false);
 
-				// System.out.println(arrFeed.size());
-				if (arrFeed != null) {
-					Iterator itarray = arrFeed.iterator();
+		// System.out.println(arrFeed.size());
+		if (arrFeed != null) {
+			Iterator itarray = arrFeed.iterator();
 
-					while (!feedexists && itarray.hasNext()) {
+			while (!feedexists && itarray.hasNext()) {
 
-						JSONObject listObj = (JSONObject) itarray.next();
+				JSONObject listObj = (JSONObject) itarray.next();
 
-						if (listObj.get("category").equals(category) && listObj.get("url").equals(url)) {
-							
-							if(remove) {
-								itarray.remove();
-							}
-							feedexists = true;
-						}
+				if (listObj.get("category").equals(category) && listObj.get("url").equals(url)) {
+
+					if (remove) {
+						itarray.remove();
 					}
+					feedexists = true;
 				}
-				return arrFeed;
+			}
+		}
+		return arrFeed;
 	}
-	
-	public JSONArray viewFeeds() {
 
-		JSONReader readObj = new JSONReader();
+	public JSONArray viewFeeds(boolean printFeed) {
+
+		JSONReader readObj = new JSONReader(dbfilename);
 		JSONArray arrFeed = readObj.jsonReader();
 
-		// System.out.println(arrFeed);
-
+		if (arrFeed != null && printFeed == true) {
+			Iterator itarray = arrFeed.iterator();
+			while (itarray.hasNext()) {
+				JSONObject listObj = (JSONObject) itarray.next();
+				System.out.println("Category: "+listObj.get("category").toString()+" Url: "+listObj.get("url").toString());
+			}
+		}
 		return arrFeed;
 
 	}
 
 	public List<Article> readFeed(String category, String url) {
 
-		//FeedReader parser = new FeedReader(category, url);
-		
 		RSSReader parser = new RSSReader(category, url);
 		Feed feed = parser.readFeed();
 		// System.out.println(feed);
 
 		List<Article> articles = null;
-		
-		if(feed != null) {
+
+		if (feed != null) {
 			articles = feed.getArticles();
 		}
 
@@ -106,15 +113,19 @@ public class ManageFeed {
 	}
 
 	public void removeFeed(String category, String url) {
-		
-		boolean removeFeed =true;
 
-		JSONArray arrFeed = verifyFeedExists(category,url,removeFeed);
-		JSONWriter jsonObj = new JSONWriter();
-			
-		jsonObj.jsonWrite(arrFeed,category, url,removeFeed);
-			
-		
+		boolean removeFeed = true;
+
+		JSONArray arrFeed = verifyFeedExists(category, url, removeFeed);
+		JSONWriter jsonObj = new JSONWriter(dbfilename);
+
+		boolean retVal = jsonObj.jsonWrite(arrFeed, category, url, removeFeed);
+
+		if (!retVal) {
+			System.out.println("Error writing to file.");
+		}else {
+			System.out.println("Feed removed successfully. Url:"+url);
+		}
 	}
 
 }

@@ -13,9 +13,10 @@ public class JSONReader {
 
 	private static String filename;
 	
-	public JSONReader() {
+	public JSONReader(String filename) {
 		
-		filename = "test.json";
+		//filename = "test.json";
+		this.filename = filename;
 	}
 
 	public JSONArray jsonReader() {
