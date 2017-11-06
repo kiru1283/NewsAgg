@@ -1,6 +1,5 @@
 package newsagg.view;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
@@ -10,6 +9,9 @@ import org.json.simple.JSONObject;
 
 import newsagg.controller.LoginValidation;
 import newsagg.controller.ManageFeed;
+import newsagg.controller.ShareArticle;
+import newsagg.controller.ViewArticle;
+import newsagg.exceptions.ArticleException;
 import newsagg.exceptions.AuthenticationException;
 import newsagg.exceptions.FeedException;
 import newsagg.exceptions.JSONFileException;
@@ -39,14 +41,14 @@ public class Main {
 
 	/**
 	 * Main method for program start point
-	 * @param args 
+	 * 
+	 * @param args
 	 */
 	public static void main(String[] args) {
 		Main main = new Main();
 		main.mainLoop();
 	}
-	
-	
+
 	/**
 	 * Method to call controller class methods based on user input
 	 */
@@ -87,7 +89,7 @@ public class Main {
 		}
 	}
 
-	//Method to create new User account
+	// Method to create new User account
 	private boolean createNewUser() {
 
 		System.out.println("Please enter username:");
@@ -121,7 +123,7 @@ public class Main {
 		return validUser;
 	}
 
-	//Method to validate the userid and password of an existing user account
+	// Method to validate the userid and password of an existing user account
 	private boolean loginUser() {
 
 		boolean validUser = false;
@@ -138,7 +140,7 @@ public class Main {
 		}
 
 		if (!inputUser.equals("") && !inputPass.equals("")) {
-			//for existing user
+			// for existing user
 			try {
 				if (loginObj.validateUser(inputUser, inputPass))
 
@@ -160,9 +162,9 @@ public class Main {
 		return validUser;
 	}
 
-	//Method used for processing user input after login
+	// Method used for processing user input after login
 	private void userOperations() {
-		
+
 		String loop = "GO";
 
 		while (!loop.equals("LOGOUT")) {
@@ -201,7 +203,7 @@ public class Main {
 
 	}
 
-	//Method to add subscribed feed URL to JSON file
+	// Method to add subscribed feed URL to JSON file
 	private void subscribeFeed() {
 
 		System.out.println("Please enter category:");
@@ -224,7 +226,7 @@ public class Main {
 		}
 	}
 
-	//Method to read a feed which has been subscribed by the user
+	// Method to read a feed which has been subscribed by the user
 	private void readFeed() {
 
 		boolean nofeed = userFeeds();
@@ -248,10 +250,11 @@ public class Main {
 				JSONObject listObj = (JSONObject) userarrFeed.get(index - 1);
 				String category = listObj.get("category").toString();
 				String url = listObj.get("url").toString();
+				List<String> articles = null;
 
 				try {
-					List<String> articles = manObj.readFeed(category, url, inputUser);
-
+					articles = manObj.readFeed(category, url, inputUser);
+					// print articles in the feed
 					for (String message : articles) {
 						System.out.println(message.toString());
 					}
@@ -261,6 +264,11 @@ public class Main {
 				} catch (FeedException | JSONFileException | RSSException e) {
 					System.out.println(e.getMessage());
 				}
+
+				if (articles != null) {
+					viewArticles(articles);
+				}
+
 			} else {
 				System.out.println("Invalid Feed number.");
 				System.out.println("");
@@ -273,7 +281,7 @@ public class Main {
 
 	}
 
-	//method to remove unsubscribed feed URL from the JSON file 
+	// method to remove unsubscribed feed URL from the JSON file
 	private void unsubscribeFeed() {
 
 		boolean nofeed = userFeeds();
@@ -319,7 +327,7 @@ public class Main {
 
 	}
 
-	//Method to remove feeds which are not linked to the current user
+	// Method to remove feeds which are not linked to the current user
 	@SuppressWarnings("unchecked")
 	private boolean userFeeds() {
 
@@ -358,6 +366,69 @@ public class Main {
 		}
 
 		return nofeed;
+	}
+
+	//Method to open article in browser or share by email.
+	private void viewArticles(List<String> articles) {
+
+		System.out.println("Please Enter any One Option ");
+		System.out.println("O -> Open Article in browser");
+		System.out.println("E -> Share Article by email");
+		System.out.println("R -> Return to Main Menu");
+		String options = scanner.nextLine().trim();
+
+		if (options.toUpperCase().trim().equals("R")) {
+			return;
+		}
+		if (options.toUpperCase().trim().equals("O") || options.toUpperCase().trim().equals("E")) {
+			System.out.println("Enter Article No.: ");
+			int index = -1;
+
+			try {
+				index = Integer.parseInt(scanner.nextLine().trim());
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid Article Number.");
+				return;
+			}
+
+			// return to main menu
+			if (index > 0 && index <= articles.size()) {
+				// JSONObject listObj = (JSONObject) ;
+				String article = articles.get(index - 1).toString();
+				int beginIndex = article.indexOf("link=");
+				int endIndex = article.indexOf(", creator");
+
+				String url = article.substring(beginIndex + 5, endIndex);
+
+				//open article url in browser
+				if (options.toUpperCase().trim().equals("O")) {
+					
+					ViewArticle objView = new ViewArticle(url.trim());
+
+					try {
+						objView.openArticle();
+					} catch (ArticleException e) {
+						System.out.println(e.getMessage());
+					}
+				}else
+				{
+					//share article by email
+					System.out.println("Enter email id of Reciever: ");
+					String toAddress = scanner.nextLine().trim();
+					//TODO: validate emailid input
+					
+					
+					ShareArticle shareObj = new ShareArticle();
+					shareObj.shareFeed(url.trim(),toAddress,inputUser);
+				}
+
+			} else {
+				System.out.println("Invalid Article Number.");
+			}
+		} else {
+			System.out.println("Invalid Option Entry!!");
+		}
+
 	}
 
 }

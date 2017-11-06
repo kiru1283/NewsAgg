@@ -29,7 +29,7 @@ public class LoginValidation {
 	 * @param pwd - input password to login
 	 * @return - returns true if the input userid and password match the values in users.json
 	 * @throws AuthenticationException - when password encryption fails
-	 * @throws JSONFileException - when reading values from users.json fails
+	 * @throws JSONFileException - when errors are encountered while reading values from users.json fails
 	 */
 	public boolean validateUser(String userid, String pwd) throws AuthenticationException,JSONFileException {
 
@@ -52,7 +52,7 @@ public class LoginValidation {
 	 * @param pwd - input password to create new user
 	 * @return - returns true if the userid and encrypted password are saved in users.json
 	 * @throws AuthenticationException - when password encryption fails 
-	 * @throws JSONFileException -  when writing values to users.json fails
+	 * @throws JSONFileException -  when errors are encountered while writing values to users.json fails
 	 */
 	public boolean createUser(String userid, String pwd) throws AuthenticationException,JSONFileException  {
 

@@ -10,16 +10,29 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * Class used for reading user and feed Json files
+ * @author Kiruthiga
+ *
+ */
 public class JSONReader {
 
 	private  String filename;
 	
+	/**
+	 * Constructor of JSONReader to set the file which will be read
+	 * @param filename - name of file to read
+	 */
 	public JSONReader(String filename) {
 		
-		//filename = "test.json";
 		this.filename = filename;
 	}
 
+	/**
+	 * Method to read JSON file
+	 * @return - array of elements read from Json file
+	 * @throws JSONFileException - when there is an error reading json file
+	 */
 	public JSONArray jsonReader() throws JSONFileException {
 
 		JSONParser parser = new JSONParser();
@@ -36,7 +49,7 @@ public class JSONReader {
 			filereader.close();
 
 		} catch ( IOException | ParseException e) {
-			//e.printStackTrace();
+			
 			throw new JSONFileException("Error Reading JSON file "+filename+". Error description :"+e.getMessage());
 			
 		}

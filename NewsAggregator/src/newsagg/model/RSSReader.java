@@ -17,22 +17,39 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import newsagg.exceptions.RSSException;
 
+/**
+ * Class used to read RSS feed based on url input
+ * @author Kiruthiga
+ *
+ */
 public class RSSReader {
 
 	private final String url;
 	private final String category;
 
+	/**
+	 * Constructor to set the category and feed url from user
+	 * @param category
+	 * @param feedUrl
+	 */
 	public RSSReader(String category, String feedUrl) {
 		this.category = category;
 		this.url = feedUrl;
 	}
 
+	/**
+	 * Method used to read feed url and convert to a Syndfeed object of ROME api
+	 * @return Syndfeed object of ROME api with feed url elements
+	 * @throws RSSException - when error occurs while reading the feed url
+	 */
 	public SyndFeed getSyndFeedForUrl() throws RSSException {
 
 		SyndFeed feed = null;
 		InputStream inpstr = null;
 		try {
 			URLConnection openConnection = new URL(url).openConnection();
+			
+			//some websites have gzip encoding
 			if ("gzip".equals(openConnection.getContentEncoding())) {
 				inpstr = new GZIPInputStream(inpstr);
 			}
@@ -54,6 +71,11 @@ public class RSSReader {
 		return feed;
 	}
 
+	/**
+	 * Method used to read the feed url and create the Feed object with the articles
+	 * @return feed object with details from rss feed
+	 * @throws RSSException - when error occurs while reading the feed url
+	 */
 	@SuppressWarnings("unchecked")
 	public Feed readFeed() throws  RSSException {
 		Feed feedObj = null;
@@ -67,22 +89,9 @@ public class RSSReader {
 
 			SyndContentImpl descrip = (SyndContentImpl) entry.getDescription();
 
-			/*
-			 * String display = "Entry:"; display += "\ntitle:"+entry.getTitle(); display +=
-			 * "\nlink:"+entry.getLink(); display += "\nauthor:"+entry.getAuthor(); display
-			 * += "\npublished:"+entry.getPublishedDate(); display +=
-			 * "\nupdated:"+entry.getUpdatedDate(); display +=
-			 * "\ndescription:"+descrip.getValue().replaceAll("\\<[^>]*>", "");
-			 * 
-			 * display += "\ncontent size:"+entry.getContents().size(); if
-			 * (entry.getContents().size()==1) { SyndContentImpl imp =
-			 * (SyndContentImpl)entry.getContents().get(0); display +=
-			 * "\ncontent value:"+imp.getValue(); } display += "\n";
-			 * System.out.println(display);
-			 */
-
 			Article message = new Article();
 			message.setCreator(entry.getAuthor());
+			//replace all special characters in the description
 			message.setDescription(descrip.getValue().replaceAll("\\<[^>]*>", ""));
 
 			message.setGuid(entry.getUri());

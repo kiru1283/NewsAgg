@@ -75,6 +75,7 @@ public class ManageFeed {
 
 	}
 
+	//method to verify that the feed exists in the json file
 	@SuppressWarnings("rawtypes")
 	private boolean verifyFeedExists(JSONArray arrFeed, String category, String url, boolean remove, String username) {
 
@@ -101,7 +102,11 @@ public class ManageFeed {
 		return feedexists;
 	}
 
-	
+	/**
+	 * Method to read all feeds added to a DB.json file
+	 * @return - array of elements read from json file
+	 * @throws JSONFileException - when errors are encountered  while reading file
+	 */
 	public JSONArray viewFeeds() throws JSONFileException {
 
 		JSONReader readObj = new JSONReader(dbfilename);
@@ -111,6 +116,13 @@ public class ManageFeed {
 
 	}
 
+	/**
+	 * Method to read content of a feed url
+	 * @param category - category of feed entered by user
+	 * @param url - url of feed entered by user
+	 * @return - list of articles available in the feed
+	 * @throws RSSException - when error reading the RSS feed
+	 */
 	public List<String> readFeedContent(String category, String url) throws RSSException {
 
 		RSSReader parser = new RSSReader(category, url);
@@ -131,6 +143,16 @@ public class ManageFeed {
 
 	}
 
+	/**
+	 * Method to verify that the feed url is valid and read content of feed url
+	 * @param category - category of feed entered by user
+	 * @param url - url of feed entered by user
+	 * @param username - logged in userid
+	 * @return - list of articles available in the feed
+	 * @throws FeedException - when feed url is incorrect
+	 * @throws JSONFileException - when error reading DB.json file
+	 * @throws RSSException - when error reading the RSS feed
+	 */
 	public List<String> readFeed(String category, String url, String username)
 			throws FeedException, JSONFileException, RSSException {
 
@@ -144,20 +166,21 @@ public class ManageFeed {
 		}
 
 		if (feedexists) {
-			RSSReader parser = new RSSReader(category, url);
+			/*RSSReader parser = new RSSReader(category, url);
 			Feed feed = parser.readFeed();
 			// System.out.println(feed);
 
-			List<Article> articles = null;
-			List<String> articleDetails = new ArrayList<>();
-
-			if (feed != null) {
+			List<Article> articles = null; */
+			List<String> articleDetails = readFeedContent(category, url);
+			
+			
+			/*if (feed != null) {
 				articles = feed.getArticles();
 			}
 
 			for (Article message : articles) {
 				articleDetails.add(message.toString());
-			}
+			}*/
 
 			return articleDetails;
 		} else {
@@ -167,6 +190,15 @@ public class ManageFeed {
 
 	}
 
+	/**
+	 * Method to remove a feed from the list of subscribed feeds for the logged in user
+	 * @param category - category of feed entered by user
+	 * @param url - url of feed entered by user
+	 * @param username - logged in userid
+	 * @return - true when feed url removed from json file successfully
+	 * @throws FeedException - when feed url is incorrect
+	 * @throws JSONFileException - when error reading DB.json file
+	 */
 	public boolean removeFeed(String category, String url, String username) throws FeedException, JSONFileException {
 
 		boolean removeFeed = true;
