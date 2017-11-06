@@ -4,14 +4,15 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import newsagg.exceptions.JSONFileException;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class JSONReader {
 
-	private static String filename;
+	private  String filename;
 	
 	public JSONReader(String filename) {
 		
@@ -19,7 +20,7 @@ public class JSONReader {
 		this.filename = filename;
 	}
 
-	public JSONArray jsonReader() {
+	public JSONArray jsonReader() throws JSONFileException {
 
 		JSONParser parser = new JSONParser();
 		JSONArray jsonArray = null;
@@ -34,12 +35,10 @@ public class JSONReader {
 
 			filereader.close();
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}  catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
+		} catch ( IOException | ParseException e) {
+			//e.printStackTrace();
+			throw new JSONFileException("Error Reading JSON file "+filename+". Error description :"+e.getMessage());
+			
 		}
 		return jsonArray;
 	}

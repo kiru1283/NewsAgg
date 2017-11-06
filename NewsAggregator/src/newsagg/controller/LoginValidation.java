@@ -6,6 +6,8 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import newsagg.exceptions.AuthenticationException;
+import newsagg.exceptions.JSONFileException;
 import newsagg.model.JSONReader;
 import newsagg.model.JSONWriter;
 import newsagg.model.User;
@@ -17,7 +19,7 @@ public class LoginValidation {
 	private String prevSalt;
 	private String prevPwd;
 
-	public boolean validateUser(String userid, String pwd) {
+	public boolean validateUser(String userid, String pwd) throws AuthenticationException,JSONFileException {
 
 		UserInfo userObj = new UserInfo();
 		boolean validUser = false;
@@ -32,7 +34,7 @@ public class LoginValidation {
 
 	}
 
-	public boolean createUser(String userid, String pwd) {
+	public boolean createUser(String userid, String pwd) throws AuthenticationException,JSONFileException  {
 
 		boolean retVal = true;
 
@@ -51,8 +53,8 @@ public class LoginValidation {
 
 			}
 		} else {
-			System.out.println("User Already Exists");
-			retVal = false;
+			throw new AuthenticationException("UserID Already Exists. Please create user with a different UserID.");
+			
 		}
 
 		return retVal;
@@ -60,7 +62,7 @@ public class LoginValidation {
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean checkUser(String userid) {
+	private boolean checkUser(String userid) throws JSONFileException {
 
 		boolean userExists = false;
 

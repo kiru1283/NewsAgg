@@ -5,6 +5,7 @@ public class User {
 	     private String userSalt;
 	     private String userName;
 	     
+	     
 		public String getUserName() {
 			return userName;
 		}
@@ -23,5 +24,6 @@ public class User {
 		public void setUserSalt(String userSalt) {
 			this.userSalt = userSalt;
 		}
+		
 
 }

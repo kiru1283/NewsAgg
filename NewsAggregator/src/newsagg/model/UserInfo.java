@@ -9,12 +9,14 @@ import java.util.Map;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
+import newsagg.exceptions.AuthenticationException;
+
 
 public class UserInfo {
 
 	private Map<String, User> userDatabase = new HashMap<String, User>();
 
-	public Map<String, User> signUp(String userName, String password) {
+	public Map<String, User> signUp(String userName, String password) throws AuthenticationException {
 		
 		try {
 			String salt = getNewSalt();
@@ -25,7 +27,7 @@ public class UserInfo {
 			user.setUserSalt(salt);
 			saveUser(user);
 		} catch (Exception e) {
-			System.out.println("An exception occured while create user account." + e.getMessage());
+			throw new AuthenticationException("An exception occured while creating user account.");
 			
 		}
 		return userDatabase;
@@ -34,9 +36,8 @@ public class UserInfo {
 
 	// Returns base64 encoded salt
 	private String getNewSalt() throws Exception {
-		// Don't use Random!
+		
 		SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-		// NIST recommends minimum 4 bytes. We use 8.
 		byte[] salt = new byte[8];
 		random.nextBytes(salt);
 		return Base64.getEncoder().encodeToString(salt);
@@ -51,7 +52,7 @@ public class UserInfo {
 	private String getEncryptedPassword(String password, String salt) throws Exception {
 		String algorithm = "PBKDF2WithHmacSHA1";
 		int derivedKeyLength = 160; // for SHA1
-		int iterations = 20000; // NIST specifies 10000
+		int iterations = 20000; 
 		byte[] saltBytes = Base64.getDecoder().decode(salt);
 
 		KeySpec spec = new PBEKeySpec(password.toCharArray(), saltBytes, iterations, derivedKeyLength);
@@ -62,18 +63,18 @@ public class UserInfo {
 
 	}
 
-	public boolean authenticateUser(String inputUser, String inputPass, String prevSalt, String prevPwd) {
+	public boolean authenticateUser(String inputUser, String inputPass, String prevSalt, String prevPwd) throws AuthenticationException  {
 		
 		boolean retValue = false;
 			try {
-				//String salt = user.getUserSalt();
+				
 				String calculatedHash = getEncryptedPassword(inputPass, prevSalt);
-				//if (calculatedHash.equals(user.getUserEncryptedPassword())) {
 				if(calculatedHash.equals(prevPwd)) {
 					retValue = true;
 				}
 			} catch (Exception e) {
-				System.out.println("An exception occured while authenticating user." + e.getMessage());
+				
+				throw new AuthenticationException("An exception occured while authenticating user.");
 			}
 			return retValue;
 

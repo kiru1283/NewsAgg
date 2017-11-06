@@ -6,7 +6,8 @@ package newsagg.model;
  *
  */
 public class Article {
-	private static int articleid = 0;
+	private int articleid = 0;
+//	private int currentarticle ;
 	private String description;
 	private String link;
 	private String title;
@@ -22,10 +23,14 @@ public class Article {
 //		this.pubdate = pubdate;
 //		this.creator = creator;
 		
-		articleid++;
+	//	articleid++;
+		//currentarticle = articleid;
 		
 	}
 	
+	public void setArticleid(int articleid) {
+		this.articleid = articleid;
+	}
 	public int getArticleid() {
 		return articleid;
 	}
@@ -80,7 +85,7 @@ public class Article {
 		
 	 @Override
 	    public String toString() {
-	        return "Article [title=" + title + ", description=" + description
+	        return "Article No."+articleid +" [title=" + title + ", description=" + description
 	                + ", link=" + link + ", creator=" + creator + ", guid=" + guid
 	                + ", pubdate=" + pubdate + "]";
 	    }

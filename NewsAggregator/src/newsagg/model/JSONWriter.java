@@ -3,13 +3,14 @@ package newsagg.model;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.io.FileNotFoundException;
+import newsagg.exceptions.JSONFileException;
+
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class JSONWriter {
 
-	private static String filename;
+	private String filename;
 
 	public JSONWriter(String filename) {
 		this.filename = filename;
@@ -17,14 +18,17 @@ public class JSONWriter {
 	}
 
 	@SuppressWarnings("unchecked")
-	public boolean jsonWrite(JSONArray jsonArray, String category, String url, boolean removeFeed) {
-
+	public boolean jsonWrite(JSONArray jsonArray, String category, String url, boolean removeFeed, String username) throws JSONFileException {
+		
+		boolean retVal = false;		
+		
 		if (!removeFeed) {
 			// to subscribe a feed
 			JSONObject obj = new JSONObject();
-
+			obj.put("username", username);
 			obj.put("category", category);
 			obj.put("url", url);
+			
 
 			if (jsonArray == null) {
 
@@ -33,14 +37,18 @@ public class JSONWriter {
 
 			jsonArray.add(obj);
 		}
-		boolean retVal =fileWriter(jsonArray);
+		
+		retVal =fileWriter(jsonArray);
+		
 		return retVal;
 
 	}
 
 	@SuppressWarnings("unchecked")
-	public boolean jsonUserWrite(JSONArray jsonArray, String userid, String salt, String pwd) {
+	public boolean jsonUserWrite(JSONArray jsonArray, String userid, String salt, String pwd) throws JSONFileException {
 
+		boolean retVal = false;
+		
 		JSONObject obj = new JSONObject();
 
 		obj.put("userid", userid);
@@ -52,13 +60,16 @@ public class JSONWriter {
 		}
 
 		jsonArray.add(obj);
-		boolean retVal = fileWriter(jsonArray);
+		
+		retVal = fileWriter(jsonArray);
 
 		return retVal;
 	}
 
-	private boolean fileWriter(JSONArray jsonArray) {
-		boolean retVal = true;
+	private boolean fileWriter(JSONArray jsonArray) throws JSONFileException {
+		
+		boolean retVal = false;
+		
 		try {
 
 			FileWriter file = new FileWriter(filename);
@@ -66,12 +77,13 @@ public class JSONWriter {
 			file.write(jsonArray.toJSONString());
 			file.flush();
 			file.close();
-		} catch (FileNotFoundException e) {
-			retVal = false;
-			System.out.println(e.getMessage());
-		} catch (IOException e) {
-			retVal = false;
-			System.out.println(e.getMessage());
+			
+			retVal = true;
+			
+		} catch (IOException  e) {
+			
+			//System.out.println(e.getMessage());
+			throw new JSONFileException("Error Writing to file "+filename+". Error description: "+e.getMessage());
 		}
 		
 		return retVal;
