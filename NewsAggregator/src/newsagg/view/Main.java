@@ -15,36 +15,52 @@ import newsagg.exceptions.FeedException;
 import newsagg.exceptions.JSONFileException;
 import newsagg.exceptions.RSSException;
 
+/**
+ * 
+ * @author Kiruthiga
+ * @category Main Class acting as view
+ *
+ */
 public class Main {
 	private Scanner scanner;
 	private LoginValidation loginObj;
 	private ManageFeed manObj;
 	private String inputUser;
+	private JSONArray userarrFeed;
 
+	/**
+	 * constructor to initialize the scanner and controller classes
+	 */
 	public Main() {
 		scanner = new Scanner(System.in);
 		loginObj = new LoginValidation();
 		manObj = new ManageFeed();
 	}
 
+	/**
+	 * Main method for program start point
+	 * @param args 
+	 */
 	public static void main(String[] args) {
 		Main main = new Main();
 		main.mainLoop();
 	}
-
+	
+	
+	/**
+	 * Method to call controller class methods based on user input
+	 */
 	public void mainLoop() {
 
-		System.out.println("Welcome to the NewsBoard Application !!");
+		System.out.println("Welcome to the FeedBook Application !!");
 
 		while (true) {
-			// Scanner scanner = new Scanner(System.in);
-			
+
 			boolean validUser = false;
-			// LoginValidation loginObj = new LoginValidation();
 
 			while (!validUser) {
 
-				System.out.println("To Start NewsBoard Application Please Enter : ");
+				System.out.println("To Start FeedBook Please Enter : ");
 				System.out.println("C -> To Create New User Account");
 				System.out.println("L -> To Login With Existing User Account");
 
@@ -71,6 +87,7 @@ public class Main {
 		}
 	}
 
+	//Method to create new User account
 	private boolean createNewUser() {
 
 		System.out.println("Please enter username:");
@@ -104,6 +121,7 @@ public class Main {
 		return validUser;
 	}
 
+	//Method to validate the userid and password of an existing user account
 	private boolean loginUser() {
 
 		boolean validUser = false;
@@ -120,15 +138,18 @@ public class Main {
 		}
 
 		if (!inputUser.equals("") && !inputPass.equals("")) {
+			//for existing user
 			try {
 				if (loginObj.validateUser(inputUser, inputPass))
 
 				{
 					System.out.println("Logged in!");
+					System.out.println("");
 					validUser = true;
 
 				} else {
 					System.out.println("Incorrect username or password !!");
+					System.out.println("");
 
 				}
 			} catch (AuthenticationException | JSONFileException e) {
@@ -139,9 +160,9 @@ public class Main {
 		return validUser;
 	}
 
+	//Method used for processing user input after login
 	private void userOperations() {
-
-		// System.out.println("Logged in!");
+		
 		String loop = "GO";
 
 		while (!loop.equals("LOGOUT")) {
@@ -175,36 +196,12 @@ public class Main {
 
 		}
 
-		System.out.println("Logged Out from NewsBoard Application!!");
+		System.out.println("Logged Out from FeedBook Application!!");
 		System.out.println("");
-
-		/*
-		 * // to add feed and store in JSON manObj.subscribeFeed("news",
-		 * "https://www.yahoo.com/news/rss/tech");
-		 * 
-		 * manObj.subscribeFeed("news",
-		 * "http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml");
-		 * 
-		 * // "http://www.vogella.com/article.rss"); //
-		 * manObj.subscribeFeed("news","http://api.sr.se/api/rss/program/4916"); //
-		 * "https://www.yahoo.com/news/rss/tech" //
-		 * "http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml");
-		 * 
-		 * // wrong feed manObj.subscribeFeed("news", //
-		 * "http://sverigesradio.se/radioswedenpalattsvenska");
-		 * 
-		 * // to show all feeds added so far JSONArray jsarray = manObj.viewFeeds(); //
-		 *
-		 * 
-		 * // to show the articles in a feed manObj.readFeed("news",
-		 * "http://api.sr.se/api/rss/program/4916"); // grid
-		 * 
-		 * // to delete a existing feed manObj.removeFeed("news",
-		 * "https://www.yahoo.com/news/rss/tech");
-		 */
 
 	}
 
+	//Method to add subscribed feed URL to JSON file
 	private void subscribeFeed() {
 
 		System.out.println("Please enter category:");
@@ -216,48 +213,41 @@ public class Main {
 
 			if (manObj.subscribeFeed(category, url, inputUser)) {
 				System.out.println("You have successfully subscribed to feed url: " + url);
+				System.out.println("");
 			} else {
 				System.out.println("Unable to subscribe to feed url: " + url);
+				System.out.println("");
 			}
 
-		} catch (FeedException | JSONFileException | IOException | RSSException e) {
+		} catch (FeedException | JSONFileException | RSSException e) {
 			System.out.println(e.getMessage());
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	//Method to read a feed which has been subscribed by the user
 	private void readFeed() {
-		JSONArray arrFeed = null;
-		try {
 
-			arrFeed = manObj.viewFeeds();
+		boolean nofeed = userFeeds();
 
-		} catch (JSONFileException e) {
-			System.out.println(e.getMessage());
-		}
-		if (arrFeed != null) {
-			System.out.println("Following are the Feeds subscribed:");
+		if (!nofeed) {
 			System.out.println("");
 
-			boolean nofeed = true;
-			Iterator<JSONObject> itarray = arrFeed.iterator();
-			while (itarray.hasNext()) {
-				JSONObject listObj = (JSONObject) itarray.next();
-				if (listObj.get("username").equals(inputUser)) {
-					System.out.println("Category: " + listObj.get("category").toString() + " | Url: "
-							+ listObj.get("url").toString());
-					nofeed = false;
-				}
+			System.out.println("Please enter feed number to read its articles.");
+			System.out.println("Feed No. :");
+			// String category = scanner.nextLine().trim();
+			int index = 0;
+
+			try {
+				index = Integer.parseInt(scanner.nextLine().trim());
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid Feed number.");
+				return;
 			}
 
-			if (!nofeed) {
-				System.out.println("");
-
-				System.out.println("Please enter details to read articles from one of the feeds listed above.");
-				System.out.println("Enter feed category :");
-				String category = scanner.nextLine().trim();
-				System.out.println("Enter feed url:");
-				String url = scanner.nextLine().trim();
+			if (index > 0 && index <= userarrFeed.size()) {
+				JSONObject listObj = (JSONObject) userarrFeed.get(index - 1);
+				String category = listObj.get("category").toString();
+				String url = listObj.get("url").toString();
 
 				try {
 					List<String> articles = manObj.readFeed(category, url, inputUser);
@@ -271,31 +261,103 @@ public class Main {
 				} catch (FeedException | JSONFileException | RSSException e) {
 					System.out.println(e.getMessage());
 				}
-			}else
-			{
-				System.out.println("Empty feed list. No feeds subscribed yet !!");
+			} else {
+				System.out.println("Invalid Feed number.");
 				System.out.println("");
+				return;
+			}
+		} else {
+			System.out.println("Empty feed list. No feeds subscribed yet !!");
+			System.out.println("");
+		}
+
+	}
+
+	//method to remove unsubscribed feed URL from the JSON file 
+	private void unsubscribeFeed() {
+
+		boolean nofeed = userFeeds();
+
+		if (!nofeed) {
+			System.out.println("");
+
+			System.out.println("Please enter feed number to Unsubscribe.");
+			System.out.println("Feed No. :");
+
+			int index = 0;
+
+			try {
+				index = Integer.parseInt(scanner.nextLine().trim());
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid Feed number.");
+				return;
+			}
+
+			if (index > 0 && index <= userarrFeed.size()) {
+				JSONObject listObj = (JSONObject) userarrFeed.get(index - 1);
+				String category = listObj.get("category").toString();
+				String url = listObj.get("url").toString();
+
+				try {
+					if (!manObj.removeFeed(category, url, inputUser)) {
+						System.out.println("Error writing to file.");
+					} else {
+						System.out.println("Feed removed successfully. Url:" + url);
+					}
+				} catch (FeedException | JSONFileException e) {
+					System.out.println(e.getMessage());
+				}
+			} else {
+				System.out.println("Invalid Feed number.");
+				System.out.println("");
+				return;
+			}
+		} else {
+			System.out.println("Empty feed list. No feeds subscribed yet !!");
+			System.out.println("");
+		}
+
+	}
+
+	//Method to remove feeds which are not linked to the current user
+	@SuppressWarnings("unchecked")
+	private boolean userFeeds() {
+
+		boolean nofeed = true;
+
+		userarrFeed = null;
+		try {
+
+			userarrFeed = manObj.viewFeeds();
+
+		} catch (JSONFileException e) {
+			System.out.println(e.getMessage());
+		}
+		if (userarrFeed != null) {
+
+			Iterator<JSONObject> itarray = userarrFeed.iterator();
+			int i = 1;
+			while (itarray.hasNext()) {
+				JSONObject listObj = (JSONObject) itarray.next();
+				if (listObj.get("username").equals(inputUser)) {
+					if (i == 1) {
+						System.out.println("Following are the Feeds subscribed:");
+						System.out.println("");
+					}
+					System.out.println("Feed No." + i + " | Category: " + listObj.get("category").toString()
+							+ " | Url: " + listObj.get("url").toString());
+					nofeed = false;
+					i++;
+				} else {
+					itarray.remove();
+				}
 			}
 		} else {
 			System.out.println("No feeds subscribed.Please subscribe to read a feed.");
+			System.out.println("");
 		}
-	}
 
-	private void unsubscribeFeed() {
-		System.out.println("Please enter category:");
-		String category = scanner.nextLine().trim();
-		System.out.println("Please enter feed url:");
-		String url = scanner.nextLine().trim();
-
-		try {
-			if (!manObj.removeFeed(category, url, inputUser)) {
-				System.out.println("Error writing to file.");
-			} else {
-				System.out.println("Feed removed successfully. Url:" + url);
-			}
-		} catch (FeedException | JSONFileException e) {
-			System.out.println(e.getMessage());
-		}
+		return nofeed;
 	}
 
 }

@@ -2,7 +2,6 @@ package newsagg.controller;
 
 import newsagg.model.JSONReader;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.json.simple.JSONArray;
@@ -17,13 +16,28 @@ import newsagg.model.Feed;
 import newsagg.model.JSONWriter;
 import newsagg.model.RSSReader;
 
+/**
+ * Class for Managing actions performed by user on a RSS Feed 
+ * @author Kiruthiga
+ *
+ */
 public class ManageFeed {
 
-	// private boolean feedexists;
+	
 	private static final String dbfilename = "DB.json";
 
+	/**
+	 * Method to add the feed URL to DB.json file
+	 * @param category - input category of feed being subscribed
+	 * @param url - input url of feed being subscribed
+	 * @param username - the current logged in user
+	 * @return - returns true if the feed has been added to DB.json
+	 * @throws FeedException - when  url is invalid
+	 * @throws JSONFileException - when writing to DB.json fails
+	 * @throws RSSException - when the url is not a valid RSS feed
+	 */
 	public boolean subscribeFeed(String category, String url, String username)
-			throws FeedException, JSONFileException, IOException, RSSException {
+			throws FeedException, JSONFileException, RSSException {
 
 		boolean removeFeed = false;
 		boolean feedexists = false;
@@ -93,23 +107,6 @@ public class ManageFeed {
 		JSONReader readObj = new JSONReader(dbfilename);
 
 		JSONArray arrFeed = readObj.jsonReader();
-
-/*		if (arrFeed != null) {
-
-			Iterator itarray = arrFeed.iterator();
-
-			while (itarray.hasNext()) {
-
-				JSONObject listObj = (JSONObject) itarray.next();
-
-				if (!listObj.get("username").equals(username)) {
-
-					itarray.remove();
-
-				}
-			}
-		}
-*/
 		return arrFeed;
 
 	}

@@ -12,13 +12,25 @@ import newsagg.model.JSONReader;
 import newsagg.model.JSONWriter;
 import newsagg.model.User;
 import newsagg.model.UserInfo;
-
+/**
+ * 
+ * @author Kiruthiga
+ * @category Controller class for User account maintenance
+ */
 public class LoginValidation {
 	private static final String userfilename = "users.json";
 	private JSONArray arrUser;
 	private String prevSalt;
 	private String prevPwd;
 
+	/**
+	 * Method to validate the credentials of user from the values saved in users.json
+	 * @param userid - input userid to login
+	 * @param pwd - input password to login
+	 * @return - returns true if the input userid and password match the values in users.json
+	 * @throws AuthenticationException - when password encryption fails
+	 * @throws JSONFileException - when reading values from users.json fails
+	 */
 	public boolean validateUser(String userid, String pwd) throws AuthenticationException,JSONFileException {
 
 		UserInfo userObj = new UserInfo();
@@ -34,6 +46,14 @@ public class LoginValidation {
 
 	}
 
+	/**
+	 * Method to stored userid and password of new user in users.json
+	 * @param userid - input userid to create new user
+	 * @param pwd - input password to create new user
+	 * @return - returns true if the userid and encrypted password are saved in users.json
+	 * @throws AuthenticationException - when password encryption fails 
+	 * @throws JSONFileException -  when writing values to users.json fails
+	 */
 	public boolean createUser(String userid, String pwd) throws AuthenticationException,JSONFileException  {
 
 		boolean retVal = true;
@@ -61,6 +81,7 @@ public class LoginValidation {
 
 	}
 
+	//Method to check is user exists in users.json and fetch the previous salt and password 
 	@SuppressWarnings("unchecked")
 	private boolean checkUser(String userid) throws JSONFileException {
 
