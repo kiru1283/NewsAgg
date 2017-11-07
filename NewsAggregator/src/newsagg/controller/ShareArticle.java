@@ -7,17 +7,27 @@ import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import newsagg.exceptions.ShareException;
+
 public class ShareArticle {
 	
-	public void shareFeed(String url, String toAddress, String userid) {
+	public void shareFeed(String url, String toAddress, String userid) throws ShareException{
 		
 			final String username = "feedbook.4All";
 			final String password = "Sda2proj";
 			
 			//String toAddress = "kiru.muthu@gmail.com";
+			
+			 try {
+			      InternetAddress emailAddr = new InternetAddress(toAddress);
+			      emailAddr.validate();
+			   } catch (AddressException ex) {
+				   throw new ShareException("Incorrect Reciever email id !!");
+			   }
 			
 			Properties props = new Properties();
 			props.put("mail.smtp.auth", "true");
@@ -51,7 +61,8 @@ public class ShareArticle {
 				System.out.println("Mail successfully sent to "+toAddress);
 		
 			} catch(MessagingException e) {
-				throw new RuntimeException(e);
+				
+				throw new ShareException("Error occured while sending email.");
 			}
 		
 	}

@@ -8,13 +8,12 @@ import java.util.zip.GZIPInputStream;
 
 import org.xml.sax.InputSource;
 
-//import com.sun.syndication.feed.synd.SyndCategoryImpl;
-//import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
-//import com.sun.syndication.feed.synd.SyndLinkImpl;
 import com.sun.syndication.io.SyndFeedInput;
+
+
 import newsagg.exceptions.RSSException;
 
 /**
