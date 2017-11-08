@@ -222,5 +222,20 @@ public class ManageFeed {
 		return retVal;
 
 	}
+	
+	@SuppressWarnings("unchecked")
+	public JSONArray userFeeds(JSONArray userarrFeed, String inputUser) {		
+		
+		Iterator<JSONObject> itarray = userarrFeed.iterator();
+		
+		while (itarray.hasNext()) {
+			JSONObject listObj = (JSONObject) itarray.next();
+			if (!listObj.get("username").equals(inputUser)) {
+					itarray.remove();
+			}
+		}
+		
+		return userarrFeed;
+	}
 
 }

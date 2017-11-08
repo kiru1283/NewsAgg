@@ -1,6 +1,6 @@
 package newsagg.view;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 
 import newsagg.controller.LoginValidation;
 import newsagg.controller.ManageFeed;
+import newsagg.controller.MarkArticle;
 import newsagg.controller.ShareArticle;
 import newsagg.controller.ViewArticle;
 import newsagg.exceptions.ArticleException;
@@ -28,6 +29,7 @@ public class Main {
 	private Scanner scanner;
 	private LoginValidation loginObj;
 	private ManageFeed manObj;
+	private MarkArticle articleObj;
 	private String inputUser;
 	private JSONArray userarrFeed;
 
@@ -38,6 +40,7 @@ public class Main {
 		scanner = new Scanner(System.in);
 		loginObj = new LoginValidation();
 		manObj = new ManageFeed();
+		articleObj = new MarkArticle();
 	}
 
 	/**
@@ -63,9 +66,9 @@ public class Main {
 
 			while (!validUser) {
 
-				System.out.println("To Start FeedBook Please Enter : ");
-				System.out.println("C -> To Create New User Account");
-				System.out.println("L -> To Login With Existing User Account");
+				System.out.println("To Start FeedBook Application Please Enter One Option : ");
+				System.out.println("C -> Create New User Account");
+				System.out.println("L -> Login With Existing User Account");
 
 				String inputOption = scanner.nextLine();
 
@@ -170,10 +173,14 @@ public class Main {
 
 		while (!loop.equals("LOGOUT")) {
 
+			System.out.println("--------------");
+			System.out.println("| MAIN MENU |");
+			System.out.println("--------------");
 			System.out.println("Please Enter Any One Option: ");
-			System.out.println("S -> To Subscribe a feed");
+			System.out.println("S -> Subscribe a feed");
 			System.out.println("R -> Read a feed");
-			System.out.println("U -> To UnSubscribe a feed");
+			System.out.println("V -> View Favourite Articles");
+			System.out.println("U -> UnSubscribe a feed");
 			System.out.println("X -> Exit the application");
 
 			String inputVal = scanner.nextLine();
@@ -189,6 +196,10 @@ public class Main {
 			} else if (inputVal.toUpperCase().trim().equals("U")) {
 
 				unsubscribeFeed();
+			} else if (inputVal.toUpperCase().trim().equals("V")) {
+
+				viewFavourites();
+				
 			} else if (inputVal.toUpperCase().trim().equals("X")) {
 
 				loop = "LOGOUT";
@@ -215,9 +226,7 @@ public class Main {
 		try {
 
 			if (manObj.subscribeFeed(category, url, inputUser)) {
-				System.out
-						.println("You have successfully subscribed to feed url: "
-								+ url);
+				System.out.println("You have successfully subscribed to feed url: " + url);
 				System.out.println("");
 			} else {
 				System.out.println("Unable to subscribe to feed url: " + url);
@@ -237,8 +246,7 @@ public class Main {
 		if (!nofeed) {
 			System.out.println("");
 
-			System.out
-					.println("Please enter feed number to read its articles.");
+			System.out.println("Please enter feed number to read its articles.");
 			System.out.println("Feed No. :");
 			// String category = scanner.nextLine().trim();
 			int index = 0;
@@ -270,7 +278,8 @@ public class Main {
 				}
 
 				if (articles != null) {
-					viewArticles(articles);
+					boolean isfavourite = false;
+					viewArticles(articles, category, isfavourite);
 				}
 
 			} else {
@@ -314,8 +323,7 @@ public class Main {
 					if (!manObj.removeFeed(category, url, inputUser)) {
 						System.out.println("Error writing to file.");
 					} else {
-						System.out.println("Feed removed successfully. Url:"
-								+ url);
+						System.out.println("Feed removed successfully. Url:" + url);
 					}
 				} catch (FeedException | JSONFileException e) {
 					System.out.println(e.getMessage());
@@ -333,43 +341,39 @@ public class Main {
 	}
 
 	// Method to remove feeds which are not linked to the current user
-	@SuppressWarnings("unchecked")
+	
 	private boolean userFeeds() {
 
 		boolean nofeed = true;
 
-		userarrFeed = null;
+		JSONArray userFeeds = null;
 		try {
 
-			userarrFeed = manObj.viewFeeds();
+			userFeeds = manObj.viewFeeds();
 
 		} catch (JSONFileException e) {
 			System.out.println(e.getMessage());
 		}
-		if (userarrFeed != null) {
+		if (userFeeds != null) {
 
-			Iterator<JSONObject> itarray = userarrFeed.iterator();
-			int i = 1;
-			while (itarray.hasNext()) {
-				JSONObject listObj = (JSONObject) itarray.next();
-				if (listObj.get("username").equals(inputUser)) {
+			userarrFeed = manObj.userFeeds(userFeeds, inputUser);
+			if (userarrFeed != null) {
+				int i = 1;
+				for (Object Obj : userarrFeed) {
+					JSONObject listObj = (JSONObject) Obj;
 					if (i == 1) {
-						System.out
-								.println("Following are the Feeds subscribed:");
+						System.out.println("Following are the Feeds subscribed:");
 						System.out.println("");
 					}
-					System.out.println("Feed No." + i + " | Category: "
-							+ listObj.get("category").toString() + " | Url: "
-							+ listObj.get("url").toString());
+					System.out.println("Feed No." + i + " | Category: " + listObj.get("category").toString()
+							+ " | Url: " + listObj.get("url").toString());
 					nofeed = false;
 					i++;
-				} else {
-					itarray.remove();
 				}
 			}
+
 		} else {
-			System.out
-					.println("No feeds subscribed.Please subscribe to read a feed.");
+			System.out.println("No feeds subscribed.Please subscribe to read a feed.");
 			System.out.println("");
 		}
 
@@ -377,38 +381,37 @@ public class Main {
 	}
 
 	// Method to open article in browser or share by email.
-	private void viewArticles(List<String> articles) {
+	private void viewArticles(List<String> articles, String category, boolean isfavourite) {
 
-		System.out.println("Please Enter any One Option ");
-		System.out.println("O -> Open Article in browser");
-		System.out.println("E -> Share Article by email");
-		System.out.println("M -> Mark Article as favourite");
-		System.out.println("R -> Return to Main Menu");
-		String options = scanner.nextLine().trim();
-
-		if (options.toUpperCase().trim().equals("R")) {
-			return;
-		}
-		if (options.toUpperCase().trim().equals("O")
-				|| options.toUpperCase().trim().equals("E")
-				|| options.toUpperCase().trim().equals("M")) {
-			System.out.println("Enter Article No.: ");
-			int index = -1;
-
-			try {
-				index = Integer.parseInt(scanner.nextLine().trim());
-			} catch (NumberFormatException e) {
-				System.out.println("Invalid Article Number.");
-				return;
+		String loop = "Z";
+		while (!loop.equals("R")) {
+			System.out.println("Please Enter any One Option:");
+			System.out.println("O -> Open Article in browser");
+			System.out.println("E -> Share Article by email");
+			if (isfavourite == false) {
+				System.out.println("M -> Mark Article as favourite");
+			} else {
+				System.out.println("U -> UnMark Article from favourites");
 			}
+			System.out.println("R -> Return to Main Menu");
+			String options = scanner.nextLine().trim();
 
-			// return to main menu
-			if (index > 0 && index <= articles.size()) {
-				if (options.toUpperCase().trim().equals("M")) {
-					
-					//TODO: Mark article
-					
-				} else {
+			
+			if (options.toUpperCase().trim().equals("O") || options.toUpperCase().trim().equals("E")
+					|| options.toUpperCase().trim().equals("M") || options.toUpperCase().trim().equals("U")) {
+				System.out.println("Enter Article No.: ");
+				int index = -1;
+
+				try {
+					index = Integer.parseInt(scanner.nextLine().trim());
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid Article Number.");
+					return;
+				}
+
+				// return to main menu
+				if (index > 0 && index <= articles.size()) {
+
 					// JSONObject listObj = (JSONObject) ;
 					String article = articles.get(index - 1).toString();
 					int beginIndex = article.indexOf("link=");
@@ -416,13 +419,32 @@ public class Main {
 
 					String url = article.substring(beginIndex + 5, endIndex);
 
-					// open article url in browser
-					if (options.toUpperCase().trim().equals("O")) {
+					if (options.toUpperCase().trim().equals("M")) {
+						// save an article as favorite
+						try {
 
+							articleObj.saveArticle(category, url, inputUser, false);
+
+							System.out.println("Article Marked as Favourite with URL " + url);
+
+							System.out.println("");
+						} catch (JSONFileException e) {
+							System.out.println(e.getMessage());
+						}
+
+					} else if (options.toUpperCase().trim().equals("O")) {
+						// open article url in browser
 						ViewArticle objView = new ViewArticle(url.trim());
 
 						try {
-							objView.openArticle();
+
+							if (objView.openArticle() == true) {
+								System.out.println("Article opened in browser with URL " + url);
+							} else {
+								System.out.println("Error while opening article with url: " + url);
+							}
+
+							System.out.println("");
 						} catch (ArticleException e) {
 							System.out.println(e.getMessage());
 						}
@@ -432,21 +454,95 @@ public class Main {
 						String toAddress = scanner.nextLine().trim();
 
 						ShareArticle shareObj = new ShareArticle();
+
 						try {
-							shareObj.shareFeed(url.trim(), toAddress, inputUser);
+
+							if (shareObj.shareFeed(url.trim(), toAddress, inputUser) == true) {
+								System.out.println("Mail successfully sent to " + toAddress);
+							} else {
+								System.out.println("Error sending mail to " + toAddress);
+							}
+
+							System.out.println("");
 						} catch (ShareException e) {
 							System.out.println(e.getMessage());
 						}
-					}
-				}
 
-			} else {
-				System.out.println("Invalid Article Number.");
+					} else if (options.toUpperCase().trim().equals("U") && isfavourite) {
+						try {
+
+							int begin = article.indexOf("category=");
+
+							String artcategory = article.substring(begin + 9);
+
+							JSONArray modifiedArr = articleObj.saveArticle(artcategory, url, inputUser, true);
+							if (modifiedArr.size() == 0) {
+								// return to main menu if all articles removed
+								loop = "R";
+							}
+							System.out.println("Article Removed from Favourites. Article url:" + url);
+							System.out.println("");
+						} catch (JSONFileException e) {
+							System.out.println(e.getMessage());
+							System.out.println("");
+						}
+					}
+				} else {
+					System.out.println("Invalid Article Number.");
+					System.out.println("");
+				}
+			} else if (options.toUpperCase().trim().equals("R")) {
+				// to return to main menu
+				loop = "R";
+			} 	else {
+				System.out.println("Invalid Option Entry!!");
+				System.out.println("");
 			}
-		} else {
-			System.out.println("Invalid Option Entry!!");
 		}
 
+	}
+
+	private void viewFavourites() {
+
+		JSONArray userArticle = null;
+		List<String> articles = new ArrayList<>();
+		try {
+
+			userArticle = articleObj.viewFavourites(inputUser);
+
+		} catch (JSONFileException e) {
+			System.out.println(e.getMessage());
+		}
+		if (userArticle != null) {
+
+			if (userArticle.size()> 0) {
+				int i = 1;
+				for (Object Obj : userArticle) {
+					JSONObject listObj = (JSONObject) Obj;
+					if (i == 1) {
+						System.out.println("Following are the Favourite Artciles:");
+						System.out.println("");
+					}
+					System.out.println("Article No." + i + " | Category: " + listObj.get("category").toString()
+							+ " | Url: " + listObj.get("url").toString());
+					String urltext = "link=" + listObj.get("url").toString() + ", creator=''" + ", category="
+							+ listObj.get("category").toString();
+					articles.add(urltext);
+					i++;
+				}
+
+				System.out.println("");
+				boolean isfavourite = true;
+				viewArticles(articles, "", isfavourite);
+			}
+			else {
+				System.out.println("No Articles Marked as Favourite.");
+				System.out.println("");
+			}
+		} else {
+			System.out.println("No Articles Marked as Favourite.");
+			System.out.println("");
+		}
 	}
 
 }

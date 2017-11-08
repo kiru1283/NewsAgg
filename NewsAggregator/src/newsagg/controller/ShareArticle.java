@@ -15,11 +15,12 @@ import newsagg.exceptions.ShareException;
 
 public class ShareArticle {
 	
-	public void shareFeed(String url, String toAddress, String userid) throws ShareException{
+	public boolean shareFeed(String url, String toAddress, String userid) throws ShareException{
 		
 			final String username = "feedbook.4All";
 			final String password = "Sda2proj";
 			
+			boolean retVal = false;
 			//String toAddress = "kiru.muthu@gmail.com";
 			
 			 try {
@@ -58,12 +59,14 @@ public class ShareArticle {
 		
 				Transport.send(message);
 		
-				System.out.println("Mail successfully sent to "+toAddress);
+				retVal = true;
 		
 			} catch(MessagingException e) {
 				
 				throw new ShareException("Error occured while sending email.");
 			}
+			
+			return retVal;
 		
 	}
 }

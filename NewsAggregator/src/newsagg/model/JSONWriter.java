@@ -31,17 +31,17 @@ public class JSONWriter {
 	 * @param jsonArray - list of feeds to be written to DB.json
 	 * @param category -  category of feed subscribed
 	 * @param url - link of feed subscribed
-	 * @param removeFeed - boolean to indicate if feed needs to be removed(unsubscribed) from DB.json
+	 * @param removeUrl - boolean to indicate if feed needs to be removed(unsubscribed) from DB.json
 	 * @param username - userid of logged in user
 	 * @return - true if JSON file write operation completed successfully
 	 * @throws JSONFileException - when error occurs while writing JSON file
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean jsonWrite(JSONArray jsonArray, String category, String url, boolean removeFeed, String username) throws JSONFileException {
+	public boolean jsonWrite(JSONArray jsonArray, String category, String url, boolean removeUrl, String username) throws JSONFileException {
 		
 		boolean retVal = false;		
 		
-		if (!removeFeed) {
+		if (!removeUrl) {
 			// to subscribe a feed
 			JSONObject obj = new JSONObject();
 			obj.put("username", username);
@@ -117,5 +117,6 @@ public class JSONWriter {
 		
 		return retVal;
 	}
+	
 
 }
