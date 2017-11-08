@@ -15,12 +15,21 @@ import newsagg.exceptions.ShareException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+
+/**
+ * Class to create the Article sub menu and provided article operations
+ * @author Kiruthiga
+ *
+ */
 public class ArticleView {
 
 
 	private MarkArticle articleObj;
 	private Scanner scanner;
 	
+	/**
+	 * Constructor Method to initialize the controller
+	 */
 	public ArticleView() {
 		
 		articleObj = new MarkArticle();
@@ -29,7 +38,13 @@ public class ArticleView {
 	
 
 
-	// Method to open article in browser or share by email.
+	/**
+	 * Method to open article in browser or share by email.
+	 * @param articles - list of articles to be displayed
+	 * @param category - category of Feed
+	 * @param isfavourite - true we need to view favourite articles 
+	 * @param inputUser - userid of the logged in user
+	 */
 	public void viewArticles(List<String> articles, String category, boolean isfavourite, String inputUser) {
 
 		String loop = "Z";
@@ -154,6 +169,10 @@ public class ArticleView {
 
 	}
 
+	/**
+	 * Method to list the article marked as favourites
+	 * @param inputUser - userid of the logged in user
+	 */
 	public void viewFavourites(String inputUser) {
 
 		JSONArray userArticle = null;

@@ -6,32 +6,41 @@ import java.util.Scanner;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import newsagg.controller.LoginValidation;
 import newsagg.controller.ManageFeed;
 import newsagg.exceptions.FeedException;
 import newsagg.exceptions.JSONFileException;
 import newsagg.exceptions.RSSException;
 
+/**
+ * Class to create the FEED sub menu and provided feed operations
+ * 
+ * @author Kiruthiga
+ * 
+ */
 public class FeedView {
 
 	private Scanner scanner;
-	//private String inputUser;
 	private ManageFeed manObj;
 	private ArticleView artObj;
 	private JSONArray userarrFeed;
-	
+
+	/**
+	 * Constructor method to set the controller objects
+	 */
 	public FeedView() {
 		manObj = new ManageFeed();
 		scanner = new Scanner(System.in);
 		artObj = new ArticleView();
-		
 
 	}
 
-	// Method to add subscribed feed URL to JSON file
+	/**
+	 * Method to add subscribed feed URL to JSON file
+	 * 
+	 * @param inputUser
+	 *            - userid of logged in user
+	 */
 	public void subscribeFeed(String inputUser) {
-
-		
 
 		System.out.println("Please enter category:");
 		String category = scanner.nextLine().trim();
@@ -55,9 +64,12 @@ public class FeedView {
 		}
 	}
 
-
-
-	// Method to read a feed which has been subscribed by the user
+	/**
+	 * Method to read a feed which has been subscribed by the user
+	 * 
+	 * @param inputUser
+	 *            - userid of logged in user
+	 */
 	public void readFeed(String inputUser) {
 
 		System.out.println("");
@@ -75,7 +87,8 @@ public class FeedView {
 
 			if (!nofeed) {
 				System.out.println("");
-				System.out.println("Please enter feed number to read its articles.");
+				System.out
+						.println("Please enter feed number to read its articles.");
 				System.out.println("Feed No. :");
 				// String category = scanner.nextLine().trim();
 				int index = 0;
@@ -88,7 +101,8 @@ public class FeedView {
 				}
 
 				if (index > 0 && index <= userarrFeed.size()) {
-					JSONObject listObj = (JSONObject) userarrFeed.get(index - 1);
+					JSONObject listObj = (JSONObject) userarrFeed
+							.get(index - 1);
 					String category = listObj.get("category").toString();
 					String url = listObj.get("url").toString();
 					List<String> articles = null;
@@ -108,7 +122,8 @@ public class FeedView {
 
 					if (articles != null) {
 						boolean isfavourite = false;
-						artObj.viewArticles(articles, category, isfavourite,inputUser);
+						artObj.viewArticles(articles, category, isfavourite,
+								inputUser);
 					}
 
 				} else {
@@ -118,7 +133,8 @@ public class FeedView {
 				}
 
 			} else {
-				System.out.println("Empty feed list. No feeds subscribed yet !!");
+				System.out
+						.println("Empty feed list. No feeds subscribed yet !!");
 				System.out.println("");
 			}
 		} else if (selection.toUpperCase().trim().equals("R")) {
@@ -130,9 +146,12 @@ public class FeedView {
 
 	}
 
-	
-	
-	// method to remove unsubscribed feed URL from the JSON file
+	/**
+	 * Method to remove unsubscribed feed URL from the JSON file
+	 * 
+	 * @param inputUser
+	 *            - userid of logged in user
+	 */
 	public void unsubscribeFeed(String inputUser) {
 
 		boolean nofeed = userFeeds(inputUser);
@@ -180,42 +199,44 @@ public class FeedView {
 	}
 
 	// Method to remove feeds which are not linked to the current user
+	private boolean userFeeds(String inputUser) {
 
-		private boolean userFeeds(String inputUser) {
+		boolean nofeed = true;
 
-			boolean nofeed = true;
+		JSONArray userFeeds = null;
+		try {
 
-			JSONArray userFeeds = null;
-			try {
+			userFeeds = manObj.viewFeeds();
 
-				userFeeds = manObj.viewFeeds();
-
-			} catch (JSONFileException e) {
-				System.out.println(e.getMessage());
-			}
-			if (userFeeds != null) {
-
-				userarrFeed = manObj.userFeeds(userFeeds, inputUser);
-				if (userarrFeed != null) {
-					int i = 1;
-					for (Object Obj : userarrFeed) {
-						JSONObject listObj = (JSONObject) Obj;
-						if (i == 1) {
-							System.out.println("Following are the Feeds subscribed:");
-							System.out.println("");
-						}
-						System.out.println("Feed No." + i + " | Category: " + listObj.get("category").toString()
-								+ " | Url: " + listObj.get("url").toString());
-						nofeed = false;
-						i++;
-					}
-				}
-
-			} else {
-				System.out.println("No feeds subscribed.Please subscribe to read a feed.");
-				System.out.println("");
-			}
-
-			return nofeed;
+		} catch (JSONFileException e) {
+			System.out.println(e.getMessage());
 		}
+		if (userFeeds != null) {
+
+			userarrFeed = manObj.userFeeds(userFeeds, inputUser);
+			if (userarrFeed != null) {
+				int i = 1;
+				for (Object Obj : userarrFeed) {
+					JSONObject listObj = (JSONObject) Obj;
+					if (i == 1) {
+						System.out
+								.println("Following are the Feeds subscribed:");
+						System.out.println("");
+					}
+					System.out.println("Feed No." + i + " | Category: "
+							+ listObj.get("category").toString() + " | Url: "
+							+ listObj.get("url").toString());
+					nofeed = false;
+					i++;
+				}
+			}
+
+		} else {
+			System.out
+					.println("No feeds subscribed.Please subscribe to read a feed.");
+			System.out.println("");
+		}
+
+		return nofeed;
+	}
 }

@@ -1,29 +1,13 @@
 package newsagg.view;
 
-import java.io.Console;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Scanner;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import newsagg.controller.LoginValidation;
-import newsagg.controller.ManageFeed;
-import newsagg.controller.MarkArticle;
-import newsagg.controller.ShareArticle;
-import newsagg.controller.ViewArticle;
-import newsagg.exceptions.ArticleException;
-import newsagg.exceptions.AuthenticationException;
-import newsagg.exceptions.FeedException;
-import newsagg.exceptions.JSONFileException;
-import newsagg.exceptions.RSSException;
-import newsagg.exceptions.ShareException;
 
 /**
- * 
+ * Main Class acting as View and called other View classes
  * @author Kiruthiga
- * @category Main Class acting as view
+ * 
  * 
  */
 public class Main {
