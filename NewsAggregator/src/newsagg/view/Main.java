@@ -58,7 +58,10 @@ public class Main {
 	 */
 	public void mainLoop() {
 
-		System.out.println("Welcome to the FeedBook Application !!");
+		System.out.println("***********************************");
+		System.out.println("* Welcome To FeedBook Application *");
+		System.out.println("***********************************");
+		System.out.println("");
 
 		while (true) {
 
@@ -66,7 +69,7 @@ public class Main {
 
 			while (!validUser) {
 
-				System.out.println("To Start FeedBook Application Please Enter One Option : ");
+				System.out.println("To Enter Please Select One Option : ");
 				System.out.println("C -> Create New User Account");
 				System.out.println("L -> Login With Existing User Account");
 
@@ -81,7 +84,7 @@ public class Main {
 					validUser = loginUser();
 
 				} else {
-					System.out.println("Invalid Option Entry!!");
+					System.out.println("Invalid Option Entered!!");
 				}
 
 			}
@@ -96,9 +99,9 @@ public class Main {
 	// Method to create new User account
 	private boolean createNewUser() {
 
-		System.out.println("Please enter username:");
+		System.out.println("Please Enter Username:");
 		inputUser = scanner.nextLine().trim();
-		System.out.println("Please enter password:");
+		System.out.println("Please Enter Password:");
 		String inputPass = scanner.nextLine().trim();
 
 		boolean validUser = false;
@@ -131,9 +134,9 @@ public class Main {
 	private boolean loginUser() {
 
 		boolean validUser = false;
-		System.out.println("Please enter username:");
+		System.out.println("Please Enter Username:");
 		inputUser = scanner.nextLine().trim();
-		System.out.println("Please enter password:");
+		System.out.println("Please Enter Password:");
 		String inputPass = scanner.nextLine().trim();
 
 		if (inputUser.equals("")) {
@@ -154,7 +157,7 @@ public class Main {
 					validUser = true;
 
 				} else {
-					System.out.println("Incorrect username or password !!");
+					System.out.println("Incorrect Username or Password !!");
 					System.out.println("");
 
 				}
@@ -199,18 +202,19 @@ public class Main {
 			} else if (inputVal.toUpperCase().trim().equals("V")) {
 
 				viewFavourites();
-				
+
 			} else if (inputVal.toUpperCase().trim().equals("X")) {
 
 				loop = "LOGOUT";
 
 			} else {
-				System.out.println("Invalid Option Entry!!");
+				System.out.println("Invalid Option Entered!!");
 			}
 
 		}
-
-		System.out.println("Logged Out from FeedBook Application!!");
+		System.out.println("**************************************");
+		System.out.println("*Logged Out Of FeedBook Application!!*");
+		System.out.println("**************************************");
 		System.out.println("");
 
 	}
@@ -241,54 +245,71 @@ public class Main {
 	// Method to read a feed which has been subscribed by the user
 	private void readFeed() {
 
-		boolean nofeed = userFeeds();
+		System.out.println("");
+		System.out.println("--------------------");
+		System.out.println("| SUB-MENU - FEEDS  |");
+		System.out.println("--------------------");
+		System.out.println("Please Select One Option:");
+		System.out.println("L -> List Articles in a Feed");
+		System.out.println("R -> Return to Main Menu");
+		String selection = scanner.nextLine().trim();
 
-		if (!nofeed) {
-			System.out.println("");
+		if (selection.toUpperCase().trim().equals("L")) {
 
-			System.out.println("Please enter feed number to read its articles.");
-			System.out.println("Feed No. :");
-			// String category = scanner.nextLine().trim();
-			int index = 0;
+			boolean nofeed = userFeeds();
 
-			try {
-				index = Integer.parseInt(scanner.nextLine().trim());
-			} catch (NumberFormatException e) {
-				System.out.println("Invalid Feed number.");
-				return;
-			}
-
-			if (index > 0 && index <= userarrFeed.size()) {
-				JSONObject listObj = (JSONObject) userarrFeed.get(index - 1);
-				String category = listObj.get("category").toString();
-				String url = listObj.get("url").toString();
-				List<String> articles = null;
+			if (!nofeed) {
+				System.out.println("");
+				System.out.println("Please enter feed number to read its articles.");
+				System.out.println("Feed No. :");
+				// String category = scanner.nextLine().trim();
+				int index = 0;
 
 				try {
-					articles = manObj.readFeed(category, url, inputUser);
-					// print articles in the feed
-					for (String message : articles) {
-						System.out.println(message.toString());
-					}
-
-					System.out.println("");
-
-				} catch (FeedException | JSONFileException | RSSException e) {
-					System.out.println(e.getMessage());
+					index = Integer.parseInt(scanner.nextLine().trim());
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid Feed number.");
+					return;
 				}
 
-				if (articles != null) {
-					boolean isfavourite = false;
-					viewArticles(articles, category, isfavourite);
+				if (index > 0 && index <= userarrFeed.size()) {
+					JSONObject listObj = (JSONObject) userarrFeed.get(index - 1);
+					String category = listObj.get("category").toString();
+					String url = listObj.get("url").toString();
+					List<String> articles = null;
+
+					try {
+						articles = manObj.readFeed(category, url, inputUser);
+						// print articles in the feed
+						for (String message : articles) {
+							System.out.println(message.toString());
+						}
+
+						System.out.println("");
+
+					} catch (FeedException | JSONFileException | RSSException e) {
+						System.out.println(e.getMessage());
+					}
+
+					if (articles != null) {
+						boolean isfavourite = false;
+						viewArticles(articles, category, isfavourite);
+					}
+
+				} else {
+					System.out.println("Invalid Feed number.");
+					System.out.println("");
+					return;
 				}
 
 			} else {
-				System.out.println("Invalid Feed number.");
+				System.out.println("Empty feed list. No feeds subscribed yet !!");
 				System.out.println("");
-				return;
 			}
+		} else if (selection.toUpperCase().trim().equals("R")) {
+			return;
 		} else {
-			System.out.println("Empty feed list. No feeds subscribed yet !!");
+			System.out.println("Invalid Option Entered !!");
 			System.out.println("");
 		}
 
@@ -341,7 +362,7 @@ public class Main {
 	}
 
 	// Method to remove feeds which are not linked to the current user
-	
+
 	private boolean userFeeds() {
 
 		boolean nofeed = true;
@@ -384,7 +405,11 @@ public class Main {
 	private void viewArticles(List<String> articles, String category, boolean isfavourite) {
 
 		String loop = "Z";
+
 		while (!loop.equals("R")) {
+			System.out.println("--------------------");
+			System.out.println("| SUB-MENU - ARTICLES  |");
+			System.out.println("--------------------");
 			System.out.println("Please Enter any One Option:");
 			System.out.println("O -> Open Article in browser");
 			System.out.println("E -> Share Article by email");
@@ -396,7 +421,6 @@ public class Main {
 			System.out.println("R -> Return to Main Menu");
 			String options = scanner.nextLine().trim();
 
-			
 			if (options.toUpperCase().trim().equals("O") || options.toUpperCase().trim().equals("E")
 					|| options.toUpperCase().trim().equals("M") || options.toUpperCase().trim().equals("U")) {
 				System.out.println("Enter Article No.: ");
@@ -494,8 +518,8 @@ public class Main {
 			} else if (options.toUpperCase().trim().equals("R")) {
 				// to return to main menu
 				loop = "R";
-			} 	else {
-				System.out.println("Invalid Option Entry!!");
+			} else {
+				System.out.println("Invalid Option Entered!!");
 				System.out.println("");
 			}
 		}
@@ -515,7 +539,7 @@ public class Main {
 		}
 		if (userArticle != null) {
 
-			if (userArticle.size()> 0) {
+			if (userArticle.size() > 0) {
 				int i = 1;
 				for (Object Obj : userArticle) {
 					JSONObject listObj = (JSONObject) Obj;
@@ -534,8 +558,7 @@ public class Main {
 				System.out.println("");
 				boolean isfavourite = true;
 				viewArticles(articles, "", isfavourite);
-			}
-			else {
+			} else {
 				System.out.println("No Articles Marked as Favourite.");
 				System.out.println("");
 			}
