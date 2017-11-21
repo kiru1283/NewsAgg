@@ -37,6 +37,7 @@ public class UserLogin {
 
 	/**
 	 * Method to create new User account
+	 * 
 	 * @return true if account was created successfully
 	 */
 	public boolean createNewUser() {
@@ -59,18 +60,27 @@ public class UserLogin {
 		}
 
 		if (!inputUser.equals("") && !inputPass.equals("")) {
-			// for new users
-			try {
-				if (loginObj.createUser(inputUser, inputPass)) {
-					System.out.println("User account created successfully!!");
-					System.out.println("");
-					validUser = true;
-				} else {
-					System.out.println("Error while creating User account!!");
-					System.out.println("");
+			if (inputUser.length() <= 4) {
+				System.out.println("Username is too short, please enter 5 characters !!");
+				System.out.println("");
+			} else if (inputPass.length() <= 4) {
+				System.out.println("Password is too short, please enter 5 characters !!");
+				System.out.println("");
+			} else {
+
+				// for new users
+				try {
+					if (loginObj.createUser(inputUser, inputPass)) {
+						System.out.println("User account created successfully!!");
+						System.out.println("");
+						validUser = true;
+					} else {
+						System.out.println("Error while creating User account!!");
+						System.out.println("");
+					}
+				} catch (AuthenticationException | JSONFileException e) {
+					System.out.println(e.getMessage());
 				}
-			} catch (AuthenticationException | JSONFileException e) {
-				System.out.println(e.getMessage());
 			}
 		}
 
@@ -79,6 +89,7 @@ public class UserLogin {
 
 	/**
 	 * Method to validate the userid and password of an existing user account
+	 * 
 	 * @return true if the userid and password match the values in the JSON
 	 */
 	public boolean loginUser() {

@@ -21,13 +21,15 @@ public class ShareArticle {
 			final String password = "Sda2proj";
 			
 			boolean retVal = false;
-			//String toAddress = "kiru.muthu@gmail.com";
+			
 			
 			 try {
 			      InternetAddress emailAddr = new InternetAddress(toAddress);
 			      emailAddr.validate();
 			   } catch (AddressException ex) {
+				   
 				   throw new ShareException("Incorrect Reciever email id !!");
+				   
 			   }
 			
 			Properties props = new Properties();
